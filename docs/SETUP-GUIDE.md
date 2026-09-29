@@ -13,6 +13,7 @@ This guide installs SEO Office and the five companion Claude Code plugins, plus 
 | **claude-blog** | Blog strategy, writing, and content audits with a quality gate | Inside Claude Code | `/blog ...` commands |
 | **banana-claude** | Image generation with Google Gemini. Shows the prompt and cost before it runs | Inside Claude Code | `/banana-claude:banana ...` |
 | **YouTube Pro** | YouTube research, AI insights, scripts, and thumbnails | Browser, at `http://127.0.0.1:5000` | `npm run dev` in its folder |
+| **Obsidian vault** | Your SEO knowledge base: research, client notes, decisions, all with sources | Obsidian app + Claude Code | `~/Documents/SEO-Office-Vault` |
 
 ## Before you start
 
@@ -49,6 +50,7 @@ It runs in this order:
 1. **SEO Office.** Runs the original `scripts/install.sh`: checks your system, installs Node 24 and pnpm if needed, installs dependencies, and creates `.env.local`.
 2. **Claude Code plugins.** Adds each plugin's marketplace and installs claude-seo, claude-obsidian, claude-ads, claude-blog, and banana-claude. These are the same as typing `/plugin marketplace add ...` and `/plugin install ...` inside Claude Code.
 3. **YouTube Pro.** Clones it to `~/youtubepro`, runs `npm install`, and creates its `.env` file.
+4. **Obsidian vault.** Copies `obsidian-vault-template/` to `~/Documents/SEO-Office-Vault`. If that folder already exists, it is left alone.
 
 It ends with a summary. Anything that failed is listed; fix it and run the same command again. Parts that already worked are skipped.
 
@@ -86,11 +88,47 @@ Then type these one at a time and follow each one's prompts:
 | `/seo setup` | Creates claude-seo's private Python environment and installs its browser |
 | `/seo doctor` | Confirms claude-seo is ready |
 | `/ads setup` | Creates your first client profile: accounts, KPIs, and safety guardrails |
-| `/claude-obsidian:wiki` | Starts your knowledge vault. It shows a plan first and only creates files once you approve |
 | `/banana-claude:banana generate a 16:9 test image of a tidy desk` | Test image. Needs a Gemini key; shows cost before running |
 | `/blog strategy <your niche>` | First blog plan |
 
-## Step 5 — API keys
+## Step 5 — Your Obsidian vault
+
+The installer created a ready-made vault at `~/Documents/SEO-Office-Vault`. It was generated with claude-obsidian's own setup tool and passes its health check.
+
+**Open it in Obsidian**
+
+1. Download Obsidian (free) from <https://obsidian.md> and install it.
+2. Open Obsidian → **Open folder as vault** → choose `Documents/SEO-Office-Vault`.
+
+**Fill it with Claude**
+
+```bash
+cd ~/Documents/SEO-Office-Vault
+claude
+```
+
+| Command | What it does |
+| --- | --- |
+| `/claude-obsidian:wiki` | Checks the vault and shows what to do next |
+| Drop a file into `inbox/`, then `/claude-obsidian:wiki-ingest` | Turns a source (report, brief, transcript) into linked, cited notes |
+| `/claude-obsidian:wiki-query <question>` | Answers from your vault only, with sources |
+| `/claude-obsidian:save` | Saves a useful answer from the chat into the vault |
+| `/claude-obsidian:wiki-lint` | Health check: dead links, orphans, missing sources |
+
+Each change is shown as a plan first and written only after you approve it.
+
+**What's inside**
+
+| Folder | Purpose |
+| --- | --- |
+| `inbox/` | Drop new sources here |
+| `wiki/` | Your notes. `index.md` is the catalogue, `hot.md` is recent context, `log.md` is the history |
+| `wiki/meta/ledgers/` | Source and claim tracking. Leave these to the plugin |
+| `.raw/` | Archived copies of ingested sources (hidden in Obsidian) |
+
+**Keep client data private.** The vault lives outside the SEO Office folder, so nothing in it is uploaded to GitHub. `obsidian-vault-template/` in this repo is only the empty starting copy. Don't put client notes in it.
+
+## Step 6 — API keys
 
 You do not need all of these on day one. Start with the **Priority 1** rows.
 
@@ -121,7 +159,8 @@ Rules for keys:
 | Plugin commands like `/seo` do nothing | Run `/reload-plugins`, or quit and restart Claude Code |
 | YouTube Pro says port 5000 is in use (common on Mac) | Add `PORT=5050` to `~/youtubepro/.env`, then open `http://127.0.0.1:5050` |
 | Python version error | Install Python 3.11+ (see "Before you start"), then re-run the script |
-| Want to redo just one part | `SKIP_SEO_OFFICE=1`, `SKIP_PLUGINS=1`, or `SKIP_YOUTUBEPRO=1` in front of the command skips that part |
+| Want to redo just one part | `SKIP_SEO_OFFICE=1`, `SKIP_PLUGINS=1`, `SKIP_YOUTUBEPRO=1`, or `SKIP_VAULT=1` in front of the command skips that part |
+| Want the vault somewhere else | `VAULT_DIR="$HOME/Obsidian/SEO" bash scripts/setup-toolkit.sh` |
 
 ## Safety notes
 
