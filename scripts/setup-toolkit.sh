@@ -34,7 +34,45 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 YOUTUBEPRO_DIR="${YOUTUBEPRO_DIR:-$HOME/youtubepro}"
 YOUTUBEPRO_REPO="https://github.com/AgriciDaniel/youtubepro.git"
-VAULT_DIR="${VAULT_DIR:-$HOME/Documents/SEO-Office-Vault}"
+
+# Native Windows shells (Git Bash, MSYS, Cygwin) cannot run SEO Office.
+# Stop early with the fix instead of failing halfway through.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    cat >&2 <<'EOF'
+
+  This is Windows, not Linux. SEO Office runs on Windows through WSL
+  (a free Linux layer built into Windows).
+
+  1. Open PowerShell as Administrator and run:   wsl --install
+  2. Restart the PC. Ubuntu opens and asks you to pick a username/password.
+  3. In the Ubuntu window, run the commands in docs/SETUP-GUIDE.md
+     under "Windows: run everything inside Ubuntu".
+
+EOF
+    exit 1
+    ;;
+esac
+
+# Inside WSL, put the vault in the Windows Documents folder so the Windows
+# Obsidian app can open it directly.
+is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
+default_vault_dir() {
+  if is_wsl && command -v wslpath >/dev/null 2>&1 && command -v cmd.exe >/dev/null 2>&1; then
+    local win_home
+    win_home=$(cmd.exe /c "echo %USERPROFILE%" 2>/dev/null | tr -d '\r')
+    if [[ -n "$win_home" && "$win_home" != *%* ]]; then
+      local unix_home
+      unix_home=$(wslpath -u "$win_home" 2>/dev/null)
+      if [[ -n "$unix_home" && -d "$unix_home" ]]; then
+        printf '%s/Documents/SEO-Office-Vault' "$unix_home"
+        return
+      fi
+    fi
+  fi
+  printf '%s/Documents/SEO-Office-Vault' "$HOME"
+}
+VAULT_DIR="${VAULT_DIR:-$(default_vault_dir)}"
 VAULT_TEMPLATE="$REPO_ROOT/obsidian-vault-template"
 
 # "<marketplace GitHub repo>|<plugin>@<marketplace name>"
