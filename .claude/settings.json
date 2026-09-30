@@ -1,0 +1,26 @@
+{
+  "extraKnownMarketplaces": {
+    "agricidaniel-claude-seo": {
+      "source": { "source": "github", "repo": "AgriciDaniel/claude-seo" }
+    },
+    "agricidaniel-claude-obsidian": {
+      "source": { "source": "github", "repo": "AgriciDaniel/claude-obsidian" }
+    },
+    "ai-marketing-hub-claude-ads": {
+      "source": { "source": "github", "repo": "AgriciDaniel/claude-ads" }
+    },
+    "agricidaniel-blog": {
+      "source": { "source": "github", "repo": "AgriciDaniel/claude-blog" }
+    },
+    "banana-claude-marketplace": {
+      "source": { "source": "github", "repo": "AgriciDaniel/banana-claude" }
+    }
+  },
+  "enabledPlugins": {
+    "claude-seo@agricidaniel-claude-seo": true,
+    "claude-obsidian@agricidaniel-claude-obsidian": true,
+    "claude-ads@ai-marketing-hub-claude-ads": true,
+    "claude-blog@agricidaniel-blog": true,
+    "banana-claude@banana-claude-marketplace": true
+  }
+}

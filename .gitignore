@@ -69,3 +69,8 @@ office-broken.png
 /audit-*.png
 /page-*.png
 
+
+# Local-only client material: never committed
+/private/
+/CLAUDE.local.md
+/.claude/skills/private-*/

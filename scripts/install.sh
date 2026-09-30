@@ -44,13 +44,15 @@ warn()  { printf "    %s! %s%s\n" "$c_yellow" "$1" "$c_reset"; }
 fail()  { printf "    %s✗ %s%s\n" "$c_red" "$1" "$c_reset" >&2; exit 1; }
 
 confirm() {
-  local response
-  if [[ -r /dev/tty ]]; then
-    read -r -p "    ? $1 [y/N] " response </dev/tty
-  else
+  local response=""
+  # /dev/tty can exist yet fail to open (no controlling terminal), so test
+  # opening it rather than only checking the file.
+  if ! { exec 3</dev/tty; } 2>/dev/null; then
     warn "No interactive terminal available; treating prompt as no: $1"
     return 1
   fi
+  read -r -p "    ? $1 [y/N] " response <&3 || true
+  exec 3<&-
   [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 }
 
@@ -58,6 +60,9 @@ load_nvm() {
   export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
   # shellcheck disable=SC1091
   [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
+  # Without this, a missing nvm.sh makes the function return 1 and `set -e`
+  # silently aborts the installer on machines that have no Node yet.
+  return 0
 }
 
 # -------- pre-flight ----------------------------------------------------------
