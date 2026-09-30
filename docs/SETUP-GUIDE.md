@@ -197,6 +197,29 @@ Rules for keys:
 - `.env`, `.env.local`, and `.seo-office/` are excluded from git, so they are never uploaded to GitHub.
 - One Google Cloud project can hold the Google API key and the YouTube key. Turn on billing alerts in Google Cloud before using Gemini image generation.
 
+## Load many clients at once
+
+Put your client list in `private/clients.json` (the `private/` folder is never uploaded to GitHub):
+
+```json
+{
+  "owner": "Your name",
+  "clients": [
+    { "clientName": "Example Co", "siteUrl": "https://example.com/" }
+  ]
+}
+```
+
+With SEO Office running (`pnpm dev`), open a second Ubuntu window and run:
+
+```bash
+cd ~/seo-office && node scripts/seed-clients.mjs
+```
+
+Clients already in SEO Office are skipped, so it is safe to run again after adding more.
+
+**Private notes and skills:** `CLAUDE.local.md`, `private/`, and any skill folder named `.claude/skills/private-*` stay on your computer only. Use them for client-specific rules.
+
 ## Troubleshooting
 
 | Problem | Fix |
